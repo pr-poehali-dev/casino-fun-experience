@@ -3,11 +3,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [balance, setBalance] = useState(10000);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const games = [
     {
@@ -121,15 +129,157 @@ const Index = () => {
               ))}
             </nav>
 
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-secondary/50 gold-glow">
-                <Icon name="Wallet" size={20} className="text-secondary" />
-                <span className="font-bold text-secondary">{balance.toLocaleString()} ₽</span>
-              </div>
-              <Button size="sm" className="neon-glow">
-                <Icon name="User" size={16} className="mr-2" />
-                Профиль
-              </Button>
+            <div className="flex items-center gap-2 md:gap-4">
+              {isLoggedIn && (
+                <div className="hidden sm:flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-card border border-secondary/50 gold-glow">
+                  <Icon name="Wallet" size={18} className="text-secondary" />
+                  <span className="font-bold text-secondary text-sm md:text-base">{balance.toLocaleString()} ₽</span>
+                </div>
+              )}
+              
+              {isLoggedIn ? (
+                <Button size="sm" className="neon-glow hidden sm:flex">
+                  <Icon name="User" size={16} className="mr-2" />
+                  Профиль
+                </Button>
+              ) : (
+                <div className="hidden sm:flex items-center gap-2">
+                  <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline" className="border-primary text-primary">
+                        Вход
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md bg-card border-primary/30">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-primary">Вход в аккаунт</DialogTitle>
+                        <DialogDescription>Войдите чтобы начать играть и выигрывать</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="login-email">Email</Label>
+                          <Input id="login-email" type="email" placeholder="your@email.com" className="bg-background" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="login-password">Пароль</Label>
+                          <Input id="login-password" type="password" placeholder="••••••••" className="bg-background" />
+                        </div>
+                        <Button className="w-full neon-glow" onClick={() => { setIsLoggedIn(true); setIsLoginOpen(false); }}>
+                          <Icon name="LogIn" size={18} className="mr-2" />
+                          Войти
+                        </Button>
+                        <div className="text-center text-sm">
+                          <span className="text-muted-foreground">Нет аккаунта? </span>
+                          <button 
+                            className="text-primary font-medium hover:underline"
+                            onClick={() => { setIsLoginOpen(false); setIsRegisterOpen(true); }}
+                          >
+                            Зарегистрироваться
+                          </button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="neon-glow">
+                        Регистрация
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md bg-card border-primary/30">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-primary">Регистрация</DialogTitle>
+                        <DialogDescription>Создайте аккаунт и получите приветственный бонус +200%</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="register-name">Имя</Label>
+                          <Input id="register-name" placeholder="Ваше имя" className="bg-background" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="register-email">Email</Label>
+                          <Input id="register-email" type="email" placeholder="your@email.com" className="bg-background" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="register-password">Пароль</Label>
+                          <Input id="register-password" type="password" placeholder="••••••••" className="bg-background" />
+                        </div>
+                        <Button className="w-full neon-glow" onClick={() => { setIsLoggedIn(true); setIsRegisterOpen(false); }}>
+                          <Icon name="UserPlus" size={18} className="mr-2" />
+                          Создать аккаунт
+                        </Button>
+                        <div className="text-center text-sm">
+                          <span className="text-muted-foreground">Уже есть аккаунт? </span>
+                          <button 
+                            className="text-primary font-medium hover:underline"
+                            onClick={() => { setIsRegisterOpen(false); setIsLoginOpen(true); }}
+                          >
+                            Войти
+                          </button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
+              
+              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button size="sm" variant="outline" className="md:hidden border-primary">
+                    <Icon name="Menu" size={20} />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="bg-card border-primary/30 w-[300px]">
+                  <div className="flex flex-col gap-6 mt-8">
+                    {isLoggedIn && (
+                      <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-background border border-secondary/50 gold-glow">
+                        <Icon name="Wallet" size={20} className="text-secondary" />
+                        <span className="font-bold text-secondary">{balance.toLocaleString()} ₽</span>
+                      </div>
+                    )}
+                    
+                    <nav className="flex flex-col gap-3">
+                      {['Главная', 'Игры', 'Турниры', 'Промоакции', 'Лидерборд'].map((item) => (
+                        <button
+                          key={item}
+                          onClick={() => { setActiveSection(item.toLowerCase()); setIsMobileMenuOpen(false); }}
+                          className={`text-left px-4 py-3 rounded-lg font-medium transition-all ${
+                            activeSection === item.toLowerCase() 
+                              ? 'bg-primary/20 text-primary border border-primary/50' 
+                              : 'text-muted-foreground hover:bg-muted'
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      ))}
+                    </nav>
+                    
+                    {!isLoggedIn ? (
+                      <div className="flex flex-col gap-3 pt-4 border-t border-primary/20">
+                        <Button 
+                          className="w-full" 
+                          variant="outline"
+                          onClick={() => { setIsMobileMenuOpen(false); setIsLoginOpen(true); }}
+                        >
+                          Вход
+                        </Button>
+                        <Button 
+                          className="w-full neon-glow"
+                          onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }}
+                        >
+                          Регистрация
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button className="w-full neon-glow" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Icon name="User" size={18} className="mr-2" />
+                        Профиль
+                      </Button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
@@ -138,32 +288,32 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {activeSection === 'главная' && (
           <div className="space-y-12 animate-fade-in">
-            <section className="relative overflow-hidden rounded-2xl gradient-bg p-12 text-center neon-border">
+            <section className="relative overflow-hidden rounded-2xl gradient-bg p-6 md:p-12 text-center neon-border">
               <div className="relative z-10">
-                <h2 className="text-5xl font-bold mb-4 neon-text">Добро пожаловать в будущее азарта</h2>
-                <p className="text-xl text-muted-foreground mb-8">Современное казино с неоновым дизайном и огромными выигрышами</p>
-                <div className="flex gap-4 justify-center">
-                  <Button size="lg" className="text-lg px-8 py-6 neon-glow animate-glow-pulse">
+                <h2 className="text-3xl md:text-5xl font-bold mb-4 neon-text">Добро пожаловать в будущее азарта</h2>
+                <p className="text-base md:text-xl text-muted-foreground mb-6 md:mb-8">Современное казино с неоновым дизайном и огромными выигрышами</p>
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+                  <Button size="lg" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 neon-glow animate-glow-pulse w-full sm:w-auto">
                     <Icon name="Play" size={24} className="mr-2" />
                     Начать играть
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-secondary text-secondary hover:bg-secondary/10">
+                  <Button size="lg" variant="outline" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 border-secondary text-secondary hover:bg-secondary/10 w-full sm:w-auto">
                     <Icon name="Gift" size={24} className="mr-2" />
                     Бонусы
                   </Button>
                 </div>
-                <div className="flex gap-8 justify-center mt-8">
+                <div className="grid grid-cols-3 gap-4 md:flex md:gap-8 justify-center mt-6 md:mt-8">
                   <div>
-                    <div className="text-3xl font-bold text-secondary">₽150M+</div>
-                    <div className="text-sm text-muted-foreground">Выплачено игрокам</div>
+                    <div className="text-xl md:text-3xl font-bold text-secondary">₽150M+</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Выплачено игрокам</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-primary">12,547</div>
-                    <div className="text-sm text-muted-foreground">Активных игроков</div>
+                    <div className="text-xl md:text-3xl font-bold text-primary">12,547</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Активных игроков</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-accent">24/7</div>
-                    <div className="text-sm text-muted-foreground">Поддержка</div>
+                    <div className="text-xl md:text-3xl font-bold text-accent">24/7</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Поддержка</div>
                   </div>
                 </div>
               </div>
@@ -171,7 +321,7 @@ const Index = () => {
 
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-3xl font-bold">🔥 Популярные игры</h3>
+                <h3 className="text-2xl md:text-3xl font-bold">🔥 Популярные игры</h3>
                 <Button variant="ghost" className="text-primary">
                   Все игры
                   <Icon name="ArrowRight" size={20} className="ml-2" />
@@ -205,7 +355,7 @@ const Index = () => {
             </section>
 
             <section>
-              <h3 className="text-3xl font-bold mb-6">🎁 Промоакции</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-6">🎁 Промоакции</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {promotions.map((promo) => (
                   <Card key={promo.id} className="bg-card border-secondary/30 hover:border-secondary transition-all cursor-pointer">
@@ -228,7 +378,7 @@ const Index = () => {
 
         {activeSection === 'игры' && (
           <div className="animate-fade-in">
-            <h2 className="text-4xl font-bold mb-8">Каталог игр</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8">Каталог игр</h2>
             <Tabs defaultValue="all" className="space-y-6">
               <TabsList className="bg-card border border-primary/20">
                 <TabsTrigger value="all">Все игры</TabsTrigger>
@@ -237,7 +387,7 @@ const Index = () => {
                 <TabsTrigger value="poker">Покер</TabsTrigger>
                 <TabsTrigger value="live">Live</TabsTrigger>
               </TabsList>
-              <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <TabsContent value="all" className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 {[...games, ...games, ...games].map((game, idx) => (
                   <Card key={idx} className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer">
                     <img src={game.image} alt={game.name} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -254,7 +404,7 @@ const Index = () => {
 
         {activeSection === 'турниры' && (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-4xl font-bold">Турниры</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Турниры</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {tournaments.map((tournament) => (
                 <Card key={tournament.id} className="bg-card border-primary/30">
@@ -295,7 +445,7 @@ const Index = () => {
 
         {activeSection === 'промоакции' && (
           <div className="space-y-8 animate-fade-in">
-            <h2 className="text-4xl font-bold">Акции и бонусы</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Акции и бонусы</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[...promotions, ...promotions].map((promo, idx) => (
                 <Card key={idx} className="bg-card border-secondary/30 hover:border-secondary transition-all">
@@ -318,7 +468,7 @@ const Index = () => {
         {activeSection === 'лидерборд' && (
           <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
-              <h2 className="text-4xl font-bold">🏆 Топ игроков</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">🏆 Топ игроков</h2>
               <Button variant="outline">
                 <Icon name="RefreshCw" size={16} className="mr-2" />
                 Обновить
@@ -360,8 +510,8 @@ const Index = () => {
 
       <section className="bg-card border-t border-primary/20 py-12 mt-16">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-8">💳 Способы пополнения и вывода</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">💳 Способы пополнения и вывода</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
             {paymentMethods.map((method, idx) => (
               <Card key={idx} className="bg-background border-primary/20 hover:border-primary/60 transition-all cursor-pointer text-center">
                 <CardContent className="p-6">
