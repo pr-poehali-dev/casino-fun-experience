@@ -1,12 +1,430 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Icon from '@/components/ui/icon';
 
 const Index = () => {
+  const [activeSection, setActiveSection] = useState('home');
+  const [balance, setBalance] = useState(10000);
+
+  const games = [
+    {
+      id: 1,
+      name: 'Mega Fortune',
+      category: 'Слоты',
+      image: 'https://cdn.poehali.dev/projects/c5fdf025-49d0-4225-91c1-9ec1e308cea6/files/2388b148-d154-4465-95a7-0ad1368bbf2c.jpg',
+      jackpot: '₽2,450,000',
+      players: 1247
+    },
+    {
+      id: 2,
+      name: 'Royal Roulette',
+      category: 'Рулетка',
+      image: 'https://cdn.poehali.dev/projects/c5fdf025-49d0-4225-91c1-9ec1e308cea6/files/e1897585-53a3-46b3-b90b-0ea45b66b38c.jpg',
+      players: 856
+    },
+    {
+      id: 3,
+      name: 'Texas Holdem',
+      category: 'Покер',
+      image: 'https://cdn.poehali.dev/projects/c5fdf025-49d0-4225-91c1-9ec1e308cea6/files/d8fd1d7a-1daa-4af8-a43c-131506e3f463.jpg',
+      players: 623
+    }
+  ];
+
+  const tournaments = [
+    {
+      id: 1,
+      name: 'Турнир выходного дня',
+      prize: '₽500,000',
+      players: 245,
+      maxPlayers: 500,
+      status: 'active'
+    },
+    {
+      id: 2,
+      name: 'Mega Slots Challenge',
+      prize: '₽1,000,000',
+      players: 489,
+      maxPlayers: 1000,
+      status: 'active'
+    },
+    {
+      id: 3,
+      name: 'VIP Championship',
+      prize: '₽2,500,000',
+      players: 78,
+      maxPlayers: 100,
+      status: 'soon'
+    }
+  ];
+
+  const leaderboard = [
+    { rank: 1, name: 'CryptoKing777', wins: 145000, avatar: '👑' },
+    { rank: 2, name: 'LuckyDiamond', wins: 128500, avatar: '💎' },
+    { rank: 3, name: 'SlotMaster', wins: 112300, avatar: '🎰' },
+    { rank: 4, name: 'VegasPro', wins: 98700, avatar: '🌟' },
+    { rank: 5, name: 'RoyalFlush', wins: 87400, avatar: '🃏' }
+  ];
+
+  const promotions = [
+    {
+      id: 1,
+      title: 'Приветственный бонус',
+      description: '+200% к первому депозиту до ₽50,000',
+      type: 'hot'
+    },
+    {
+      id: 2,
+      title: 'Кэшбэк 15%',
+      description: 'Возврат проигрышей каждую неделю',
+      type: 'new'
+    },
+    {
+      id: 3,
+      title: 'Фриспины',
+      description: '100 бесплатных вращений на новые слоты',
+      type: 'hot'
+    }
+  ];
+
+  const paymentMethods = [
+    { name: 'Visa/MasterCard', icon: 'CreditCard', time: '5 минут' },
+    { name: 'Криптовалюта', icon: 'Bitcoin', time: '10 минут' },
+    { name: 'Электронные кошельки', icon: 'Wallet', time: '1 минута' },
+    { name: 'Банковский перевод', icon: 'Building', time: '1-3 дня' }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 backdrop-blur-lg bg-card/80 border-b border-primary/20 neon-border">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">🎰</div>
+              <h1 className="text-2xl font-bold text-primary neon-text">NEON CASINO</h1>
+            </div>
+            
+            <nav className="hidden md:flex items-center gap-6">
+              {['Главная', 'Игры', 'Турниры', 'Промоакции', 'Лидерборд'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => setActiveSection(item.toLowerCase())}
+                  className={`text-sm font-medium transition-all hover:text-primary ${
+                    activeSection === item.toLowerCase() ? 'text-primary neon-text' : 'text-muted-foreground'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-secondary/50 gold-glow">
+                <Icon name="Wallet" size={20} className="text-secondary" />
+                <span className="font-bold text-secondary">{balance.toLocaleString()} ₽</span>
+              </div>
+              <Button size="sm" className="neon-glow">
+                <Icon name="User" size={16} className="mr-2" />
+                Профиль
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        {activeSection === 'главная' && (
+          <div className="space-y-12 animate-fade-in">
+            <section className="relative overflow-hidden rounded-2xl gradient-bg p-12 text-center neon-border">
+              <div className="relative z-10">
+                <h2 className="text-5xl font-bold mb-4 neon-text">Добро пожаловать в будущее азарта</h2>
+                <p className="text-xl text-muted-foreground mb-8">Современное казино с неоновым дизайном и огромными выигрышами</p>
+                <div className="flex gap-4 justify-center">
+                  <Button size="lg" className="text-lg px-8 py-6 neon-glow animate-glow-pulse">
+                    <Icon name="Play" size={24} className="mr-2" />
+                    Начать играть
+                  </Button>
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-secondary text-secondary hover:bg-secondary/10">
+                    <Icon name="Gift" size={24} className="mr-2" />
+                    Бонусы
+                  </Button>
+                </div>
+                <div className="flex gap-8 justify-center mt-8">
+                  <div>
+                    <div className="text-3xl font-bold text-secondary">₽150M+</div>
+                    <div className="text-sm text-muted-foreground">Выплачено игрокам</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-primary">12,547</div>
+                    <div className="text-sm text-muted-foreground">Активных игроков</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-accent">24/7</div>
+                    <div className="text-sm text-muted-foreground">Поддержка</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-3xl font-bold">🔥 Популярные игры</h3>
+                <Button variant="ghost" className="text-primary">
+                  Все игры
+                  <Icon name="ArrowRight" size={20} className="ml-2" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {games.map((game) => (
+                  <Card key={game.id} className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer hover:scale-105 duration-300">
+                    <div className="relative overflow-hidden">
+                      <img src={game.image} alt={game.name} className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <Badge className="absolute top-3 right-3 bg-primary/90 text-white">{game.category}</Badge>
+                      {game.jackpot && (
+                        <div className="absolute bottom-3 left-3 bg-secondary/90 text-dark-bg px-3 py-1 rounded-lg font-bold">
+                          💰 {game.jackpot}
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-4">
+                      <h4 className="font-bold text-lg mb-2">{game.name}</h4>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Icon name="Users" size={16} />
+                          <span>{game.players} игроков</span>
+                        </div>
+                        <Button size="sm" className="neon-glow">Играть</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-3xl font-bold mb-6">🎁 Промоакции</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {promotions.map((promo) => (
+                  <Card key={promo.id} className="bg-card border-secondary/30 hover:border-secondary transition-all cursor-pointer">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-bold text-lg">{promo.title}</h4>
+                        <Badge variant={promo.type === 'hot' ? 'destructive' : 'default'} className="animate-glow-pulse">
+                          {promo.type === 'hot' ? '🔥 ХИТ' : '✨ НОВОЕ'}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground mb-4">{promo.description}</p>
+                      <Button className="w-full" variant="outline">Получить</Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeSection === 'игры' && (
+          <div className="animate-fade-in">
+            <h2 className="text-4xl font-bold mb-8">Каталог игр</h2>
+            <Tabs defaultValue="all" className="space-y-6">
+              <TabsList className="bg-card border border-primary/20">
+                <TabsTrigger value="all">Все игры</TabsTrigger>
+                <TabsTrigger value="slots">Слоты</TabsTrigger>
+                <TabsTrigger value="roulette">Рулетка</TabsTrigger>
+                <TabsTrigger value="poker">Покер</TabsTrigger>
+                <TabsTrigger value="live">Live</TabsTrigger>
+              </TabsList>
+              <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {[...games, ...games, ...games].map((game, idx) => (
+                  <Card key={idx} className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer">
+                    <img src={game.image} alt={game.name} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <CardContent className="p-4">
+                      <h4 className="font-bold mb-2">{game.name}</h4>
+                      <Button size="sm" className="w-full neon-glow">Играть</Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+
+        {activeSection === 'турниры' && (
+          <div className="space-y-6 animate-fade-in">
+            <h2 className="text-4xl font-bold">Турниры</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {tournaments.map((tournament) => (
+                <Card key={tournament.id} className="bg-card border-primary/30">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold mb-2">{tournament.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Icon name="Trophy" size={16} className="text-secondary" />
+                            <span className="text-secondary font-bold">{tournament.prize}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Icon name="Users" size={16} />
+                            <span>{tournament.players}/{tournament.maxPlayers}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge className={tournament.status === 'active' ? 'bg-primary' : 'bg-muted'}>
+                        {tournament.status === 'active' ? '🟢 Активен' : '🕐 Скоро'}
+                      </Badge>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2 mb-4">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all"
+                        style={{ width: `${(tournament.players / tournament.maxPlayers) * 100}%` }}
+                      />
+                    </div>
+                    <Button className="w-full neon-glow" disabled={tournament.status !== 'active'}>
+                      {tournament.status === 'active' ? 'Участвовать' : 'Ожидание'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'промоакции' && (
+          <div className="space-y-8 animate-fade-in">
+            <h2 className="text-4xl font-bold">Акции и бонусы</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...promotions, ...promotions].map((promo, idx) => (
+                <Card key={idx} className="bg-card border-secondary/30 hover:border-secondary transition-all">
+                  <CardContent className="p-8">
+                    <div className="flex items-start justify-between mb-4">
+                      <h3 className="text-2xl font-bold">{promo.title}</h3>
+                      <Badge variant={promo.type === 'hot' ? 'destructive' : 'default'} className="animate-glow-pulse">
+                        {promo.type === 'hot' ? '🔥 ХИТ' : '✨ НОВОЕ'}
+                      </Badge>
+                    </div>
+                    <p className="text-lg text-muted-foreground mb-6">{promo.description}</p>
+                    <Button className="w-full text-lg py-6" size="lg">Активировать бонус</Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'лидерборд' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between">
+              <h2 className="text-4xl font-bold">🏆 Топ игроков</h2>
+              <Button variant="outline">
+                <Icon name="RefreshCw" size={16} className="mr-2" />
+                Обновить
+              </Button>
+            </div>
+            <Card className="bg-card border-primary/30">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {leaderboard.map((player) => (
+                    <div key={player.rank} className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={`text-3xl font-bold ${
+                          player.rank === 1 ? 'text-secondary' : 
+                          player.rank === 2 ? 'text-muted-foreground' : 
+                          player.rank === 3 ? 'text-accent' : 'text-muted-foreground'
+                        }`}>
+                          #{player.rank}
+                        </div>
+                        <div className="text-4xl">{player.avatar}</div>
+                        <div>
+                          <div className="font-bold text-lg">{player.name}</div>
+                          <div className="text-sm text-muted-foreground">Выигрыш: ₽{player.wins.toLocaleString()}</div>
+                        </div>
+                      </div>
+                      {player.rank <= 3 && (
+                        <Badge className="bg-primary">
+                          <Icon name="Trophy" size={16} className="mr-1" />
+                          Победитель
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </main>
+
+      <section className="bg-card border-t border-primary/20 py-12 mt-16">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-center mb-8">💳 Способы пополнения и вывода</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {paymentMethods.map((method, idx) => (
+              <Card key={idx} className="bg-background border-primary/20 hover:border-primary/60 transition-all cursor-pointer text-center">
+                <CardContent className="p-6">
+                  <Icon name={method.icon} size={48} className="mx-auto mb-4 text-primary" />
+                  <h4 className="font-bold mb-2">{method.name}</h4>
+                  <p className="text-sm text-muted-foreground">{method.time}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Button size="lg" className="neon-glow">
+              <Icon name="Plus" size={20} className="mr-2" />
+              Пополнить счет
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-card border-t border-primary/20 py-8 mt-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="font-bold text-lg mb-4 text-primary">NEON CASINO</h4>
+              <p className="text-sm text-muted-foreground">Современное онлайн казино с лучшими играми и щедрыми бонусами</p>
+            </div>
+            <div>
+              <h5 className="font-bold mb-3">Игры</h5>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>Слоты</li>
+                <li>Рулетка</li>
+                <li>Покер</li>
+                <li>Live Casino</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-bold mb-3">Информация</h5>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>О нас</li>
+                <li>Лицензия</li>
+                <li>Правила</li>
+                <li>FAQ</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-bold mb-3">Поддержка 24/7</h5>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full">
+                  <Icon name="MessageCircle" size={16} className="mr-2" />
+                  Онлайн чат
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <Icon name="Mail" size={16} className="mr-2" />
+                  Email
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-primary/20 mt-8 pt-6 text-center text-sm text-muted-foreground">
+            © 2024 NEON CASINO. Все права защищены. Играйте ответственно 18+
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
