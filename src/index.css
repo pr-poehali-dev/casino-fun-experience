@@ -122,4 +122,34 @@
     border: 1px solid hsl(var(--primary));
     box-shadow: 0 0 10px hsl(var(--primary));
   }
+
+  .slot-spin {
+    animation: slot-spin 0.5s ease-in-out;
+  }
+
+  @keyframes slot-spin {
+    0% {
+      transform: rotateY(0deg);
+    }
+    50% {
+      transform: rotateY(180deg);
+      filter: blur(4px);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  .slot-symbols {
+    animation: symbols-roll 0.8s linear;
+  }
+
+  @keyframes symbols-roll {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
 }

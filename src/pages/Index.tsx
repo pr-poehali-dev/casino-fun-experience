@@ -16,6 +16,11 @@ const Index = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hoveredGame, setHoveredGame] = useState<number | null>(null);
+  const [isBetting, setIsBetting] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<any>(null);
+  const [betAmount, setBetAmount] = useState(100);
+  const [isSpinning, setIsSpinning] = useState(false);
 
   const games = [
     {
@@ -329,13 +334,29 @@ const Index = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {games.map((game) => (
-                  <Card key={game.id} className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer hover:scale-105 duration-300">
+                  <Card 
+                    key={game.id} 
+                    className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer hover:scale-105 duration-300"
+                    onMouseEnter={() => setHoveredGame(game.id)}
+                    onMouseLeave={() => setHoveredGame(null)}
+                  >
                     <div className="relative overflow-hidden">
-                      <img src={game.image} alt={game.name} className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <img 
+                        src={game.image} 
+                        alt={game.name} 
+                        className={`w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500 ${
+                          hoveredGame === game.id && game.category === 'Слоты' ? 'slot-spin' : ''
+                        }`}
+                      />
                       <Badge className="absolute top-3 right-3 bg-primary/90 text-white">{game.category}</Badge>
                       {game.jackpot && (
-                        <div className="absolute bottom-3 left-3 bg-secondary/90 text-dark-bg px-3 py-1 rounded-lg font-bold">
+                        <div className="absolute bottom-3 left-3 bg-secondary/90 text-dark-bg px-3 py-1 rounded-lg font-bold animate-pulse">
                           💰 {game.jackpot}
+                        </div>
+                      )}
+                      {hoveredGame === game.id && game.category === 'Слоты' && (
+                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center backdrop-blur-sm">
+                          <div className="text-4xl font-bold text-white animate-bounce">🎰</div>
                         </div>
                       )}
                     </div>
@@ -346,7 +367,13 @@ const Index = () => {
                           <Icon name="Users" size={16} />
                           <span>{game.players} игроков</span>
                         </div>
-                        <Button size="sm" className="neon-glow">Играть</Button>
+                        <Button 
+                          size="sm" 
+                          className="neon-glow"
+                          onClick={() => { setSelectedGame(game); setIsBetting(true); }}
+                        >
+                          Играть
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -389,11 +416,35 @@ const Index = () => {
               </TabsList>
               <TabsContent value="all" className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 {[...games, ...games, ...games].map((game, idx) => (
-                  <Card key={idx} className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer">
-                    <img src={game.image} alt={game.name} className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <Card 
+                    key={idx} 
+                    className="group overflow-hidden bg-card border-primary/20 hover:border-primary/60 transition-all cursor-pointer"
+                    onMouseEnter={() => setHoveredGame(game.id + idx * 100)}
+                    onMouseLeave={() => setHoveredGame(null)}
+                  >
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={game.image} 
+                        alt={game.name} 
+                        className={`w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500 ${
+                          hoveredGame === (game.id + idx * 100) && game.category === 'Слоты' ? 'slot-spin' : ''
+                        }`}
+                      />
+                      {hoveredGame === (game.id + idx * 100) && game.category === 'Слоты' && (
+                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center backdrop-blur-sm">
+                          <div className="text-3xl font-bold text-white animate-bounce">🎰</div>
+                        </div>
+                      )}
+                    </div>
                     <CardContent className="p-4">
                       <h4 className="font-bold mb-2">{game.name}</h4>
-                      <Button size="sm" className="w-full neon-glow">Играть</Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full neon-glow"
+                        onClick={() => { setSelectedGame(game); setIsBetting(true); }}
+                      >
+                        Играть
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -507,6 +558,128 @@ const Index = () => {
           </div>
         )}
       </main>
+
+      <Dialog open={isBetting} onOpenChange={setIsBetting}>
+        <DialogContent className="sm:max-w-lg bg-card border-primary/30">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-primary flex items-center gap-2">
+              <span className="text-3xl">{selectedGame?.category === 'Слоты' ? '🎰' : selectedGame?.category === 'Рулетка' ? '🎡' : '🃏'}</span>
+              {selectedGame?.name}
+            </DialogTitle>
+            <DialogDescription>Сделайте ставку и испытайте удачу!</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="relative overflow-hidden rounded-lg border-2 border-primary/30 p-6 gradient-bg">
+              {isSpinning && selectedGame?.category === 'Слоты' ? (
+                <div className="flex justify-center items-center gap-4 h-32">
+                  <div className="text-6xl animate-spin">🎰</div>
+                  <div className="text-6xl animate-spin" style={{ animationDelay: '0.2s' }}>💎</div>
+                  <div className="text-6xl animate-spin" style={{ animationDelay: '0.4s' }}>🍒</div>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className="text-5xl mb-4">
+                    {selectedGame?.category === 'Слоты' ? '🎰 💎 🍒' : 
+                     selectedGame?.category === 'Рулетка' ? '🎡' : '🃏 🃏'}
+                  </div>
+                  {selectedGame?.jackpot && (
+                    <div className="text-secondary font-bold text-2xl animate-pulse">
+                      Джекпот: {selectedGame.jackpot}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">Размер ставки</Label>
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setBetAmount(Math.max(10, betAmount - 50))}
+                  disabled={isSpinning}
+                >
+                  <Icon name="Minus" size={16} />
+                </Button>
+                <Input 
+                  type="number" 
+                  value={betAmount} 
+                  onChange={(e) => setBetAmount(Number(e.target.value))}
+                  className="text-center text-xl font-bold bg-background"
+                  disabled={isSpinning}
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setBetAmount(Math.min(balance, betAmount + 50))}
+                  disabled={isSpinning}
+                >
+                  <Icon name="Plus" size={16} />
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                {[100, 500, 1000, 5000].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => setBetAmount(amount)}
+                    disabled={isSpinning}
+                  >
+                    ₽{amount}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Ваш баланс:</span>
+                <span className="font-bold text-secondary">₽{balance.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Ставка:</span>
+                <span className="font-bold">₽{betAmount}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Баланс после:</span>
+                <span className="font-bold">₽{(balance - betAmount).toLocaleString()}</span>
+              </div>
+            </div>
+
+            <Button 
+              className="w-full text-lg py-6 neon-glow" 
+              size="lg"
+              disabled={betAmount > balance || isSpinning}
+              onClick={() => {
+                setIsSpinning(true);
+                setBalance(balance - betAmount);
+                setTimeout(() => {
+                  const win = Math.random() > 0.5;
+                  const winAmount = win ? betAmount * (Math.random() * 3 + 1) : 0;
+                  setBalance(prev => prev + Math.floor(winAmount));
+                  setIsSpinning(false);
+                }, 2000);
+              }}
+            >
+              {isSpinning ? (
+                <>
+                  <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
+                  Вращение...
+                </>
+              ) : (
+                <>
+                  <Icon name="Play" size={20} className="mr-2" />
+                  Сделать ставку ₽{betAmount}
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <section className="bg-card border-t border-primary/20 py-12 mt-16">
         <div className="container mx-auto px-4">
